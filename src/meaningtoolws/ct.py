@@ -11,7 +11,7 @@
 Meaningtool Category Tree REST API v0.1 client
 
 Official documentation for the REST API v0.1 can be found at
-http://meaningtool.com/developers/docs
+http://www.meaningtool.com/developers/docs/api/rest/v0.1
 """
 from scoring_exceptions import ScoringError
 
