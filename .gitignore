@@ -1,12 +1,1 @@
-*pyc
-src/meaningtoolws.egg-info/PKG-INFO
-src/meaningtoolws.egg-info/SOURCES.txt
-src/meaningtoolws.egg-info/dependency_links.txt
-src/meaningtoolws.egg-info/not-zip-safe
-src/meaningtoolws.egg-info/top_level.txt
-src/meaningtoolws/__init__.pyc
-src/meaningtoolws/ct.pyc
-src/meaningtoolws/scoring_exceptions.pyc
-tests/__init__.pyc
-tests/base.pyc
-tests/test_client.pyc
+*.pyc

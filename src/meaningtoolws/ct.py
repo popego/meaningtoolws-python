@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2009, Popego Corporation <contact [at] popego [dot] com>
+# Copyright (c) 2009, Popego Corporation <contact [at] meaningtool [dot] com>
 # All rights reserved.
 #
 # This file is part of the Meaningtool Web Services Python Client project
@@ -11,7 +11,7 @@
 Meaningtool Category Tree REST API v0.1 client
 
 Official documentation for the REST API v0.1 can be found at
-http://meaningtool.com/docs/ws/ct/restv0.1
+http://meaningtool.com/developers/docs
 """
 from scoring_exceptions import ScoringError
 
@@ -25,8 +25,7 @@ except ImportError:
     import simplejson as json
 
 
-MT_BASE_URL = u"http://www.meaningtool.com/ws/ct/restv0.1"
-#MT_BASE_URL = u"http://ws.meaningtool.com/ct/restv0.1"
+MT_BASE_URL = u"http://ws.meaningtool.com/rest/v0.1"
 
 _re_url = re.compile(ur"^https?://.+$")
 
@@ -100,7 +99,7 @@ class Client(object):
 
         data["source"] = source.encode("utf8")
         data["input"] = input.encode("utf8")
-
+        data["api_key"] = self.api_key
         if url_hint:
             if not _re_url.match(url_hint):
                 raise ValueError(u"url_hint")
@@ -126,6 +125,7 @@ class Client(object):
 
         data["source"] = source.encode("utf8")
         data["input"] = input.encode("utf8")
+        data["api_key"] = self.api_key
 
         if url_hint:
             if not _re_url.match(url_hint):

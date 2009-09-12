@@ -1,0 +1,10 @@
+README
+setup.py
+src/meaningtoolws/__init__.py
+src/meaningtoolws/ct.py
+src/meaningtoolws/scoring_exceptions.py
+src/meaningtoolws.egg-info/PKG-INFO
+src/meaningtoolws.egg-info/SOURCES.txt
+src/meaningtoolws.egg-info/dependency_links.txt
+src/meaningtoolws.egg-info/not-zip-safe
+src/meaningtoolws.egg-info/top_level.txt
