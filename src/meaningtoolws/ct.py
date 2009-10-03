@@ -13,7 +13,7 @@ Meaningtool Category Tree REST API v0.1 client
 Official documentation for the REST API v0.1 can be found at
 http://www.meaningtool.com/developers/docs/api/rest/v0.1
 """
-from scoring_exceptions import ScoringError
+from scoring_exceptions import BaseMeaningtoolError
 
 import re
 import urllib
@@ -83,7 +83,7 @@ class Client(object):
         if status == "ok":
             return Result(status_errcode, status_message, data)
         else:
-            raise ScoringError.from_code(status_errcode)
+            raise BaseMeaningtoolError.from_code(status_errcode)
 
     def _parse_result_json(self, raw):
         return self._parse_result_base(json.loads(raw, encoding="utf8"))
