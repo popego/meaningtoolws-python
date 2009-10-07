@@ -13,7 +13,7 @@ Meaningtool Category Tree REST API v0.1 client
 Official documentation for the REST API v0.1 can be found at
 http://www.meaningtool.com/developers/docs/api/rest/v0.1
 """
-from scoring_exceptions import BaseMeaningtoolError
+from scoring_exceptions import ScoringError
 
 import re
 import urllib
@@ -83,9 +83,12 @@ class Client(object):
         if status == "ok":
             return Result(status_errcode, status_message, data)
         else:
-            raise BaseMeaningtoolError.from_code(status_errcode)
+            raise ScoringError.from_code(status_errcode)
 
     def _parse_result_json(self, raw):
+        if raw == 'bad api key':    ## XXX: Workaround. The Invalid API key error response doesn't return a valid json response.
+            raw = '{"status": "error", "message": "Invalid API key", "data": {}, "errcode": "UserKeyInvalid"}'
+
         return self._parse_result_base(json.loads(raw, encoding="utf8"))
 
     # default request/parse methods
@@ -116,7 +119,7 @@ class Client(object):
             headers.append(("Content-Language", content_language.encode("ascii")))
 
         # Even if POST, it's idempotent as GET.
-        return self._parse_result(self._req("POST", url, data, headers))
+        return self._parse_result(self._req("GET", url, data, headers))
 
     def get_tags(self, source, input, url_hint=None, content_language=None):
         url = u"%s/tags" % self._base_url
