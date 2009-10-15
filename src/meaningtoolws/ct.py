@@ -13,7 +13,6 @@ Meaningtool Category Tree REST API v0.1 client
 Official documentation for the REST API v0.1 can be found at
 http://www.meaningtool.com/developers/docs/api/rest/v0.1
 """
-from scoring_exceptions import ScoringError
 
 import re
 import urllib
@@ -24,6 +23,8 @@ try:
 except ImportError:
     import simplejson as json
 
+from scoring_exceptions import BaseMeaningtoolError, InvalidParameter, InvalidUrl
+
 
 MT_BASE_URL = u"http://ws.meaningtool.com/rest/v0.1"
 
@@ -31,7 +32,22 @@ _re_url = re.compile(ur"^https?://.+$")
 
 
 class Result(object):
+    """ Represents the response of meaningtool.
+    """
+
     def __init__(self, status_errcode, status_message, data):
+        """ Creates the result.
+        The `data` will change takeing into account the additionals
+        parameters when called to the API.
+
+        :parameters:
+            status_errcode: str
+                the status of the response.
+            status_message: str
+                the message of the response.
+            data: dict()
+                the data of the response.
+        """
         super(Result, self).__init__()
         self.status_errcode = status_errcode
         self.status_message = status_message
@@ -42,7 +58,20 @@ class Result(object):
 
 
 class Client(object):
+    """ Interface to use the Meaningtool API.
+    """
+
     def __init__(self, api_key, ct_key, base_url=MT_BASE_URL):
+        """ Creates the client:
+
+        :parameters:
+            api_key: str
+                the api key of the user.
+            ct_key: str
+                the tree key of the category tree to use.
+            base_url: str
+                the url to use.
+        """
         self.api_key = api_key
         self.ct_key = ct_key
         self._base_url = u"%s/%s" % (base_url, ct_key)
@@ -83,7 +112,7 @@ class Client(object):
         if status == "ok":
             return Result(status_errcode, status_message, data)
         else:
-            raise ScoringError.from_code(status_errcode)
+            raise BaseMeaningtoolError.from_code(status_errcode)
 
     def _parse_result_json(self, raw):
         if raw == 'bad api key':    ## XXX: Workaround. The Invalid API key error response doesn't return a valid json response.
@@ -96,16 +125,43 @@ class Client(object):
     _parse_result = _parse_result_json
 
     def get_categories(self, source, input, url_hint=None, additionals=None, content_language=None):
+        """ Gets the categories for the input.
+
+        :parameters:
+            source: str
+                the specified source (text, url, html)
+            input: str
+                the data or url to categorize.
+            url_hint: str
+                used when the source is text or html, and is the url
+                from where the `input` was taken.
+            additionals: list(str)
+                a list with the additionals keys (top-terms, classifiers, 
+                classifiers-top-terms)
+            content_language: str
+                the language of the input.
+
+        :returns:
+            a `Result` whose "data" is the dictionary of the json response.
+
+        :exceptions:
+            `ResponseError`: if there is an error while categorizing the text.
+            `UnknownExceptionCodeError`: if the response had an error but it
+                doesn't has a kwown code.
+            `MeaningtoolError`: if there is any kind of problem while 
+                getting the conection to meaningtool.
+        """
+        self._validate_parameters(source, input, url_hint, additionals, content_language)
+
         url = u"%s/categories" % self._base_url
         data = {}
         headers = []
 
         data["source"] = source.encode("utf8")
         data["input"] = input.encode("utf8")
-        data["api_key"] = self.api_key
+        data["api_key"] = self.api_key            
+
         if url_hint:
-            if not _re_url.match(url_hint):
-                raise ValueError(u"url_hint")
             data["url_hint"] = url_hint.encode("utf8")
 
         if additionals:
@@ -114,14 +170,39 @@ class Client(object):
 
         if content_language:
             content_language = content_language[:2].lower()
-            if not len(content_language) == 2:
-                raise ValueError(u"content_language")
             headers.append(("Content-Language", content_language.encode("ascii")))
 
         # Even if POST, it's idempotent as GET.
         return self._parse_result(self._req("GET", url, data, headers))
 
     def get_tags(self, source, input, url_hint=None, content_language=None):
+        """ Gets the categories for the input.
+
+        :parameters:
+            source: str
+                the specified source (text, url, html)
+            input: str
+                the data or url to categorize.
+            url_hint: str
+                used when the source is text or html, and is the url
+                from where the `input` was taken.
+            content_language: str
+                the language of the input (it should be a 2 char value: en,
+                    es, pt...)
+
+        :returns:
+            a `Result` whose "data" is the dictionary of the json response.
+
+        :exceptions:
+            `ResponseError`: if there is an error while categorizing the text.
+            `UnknownExceptionCodeError`: if the response had an error but it
+                doesn't has a kwown code.
+            `MeaningtoolError`: if there is any kind of problem while 
+                getting the conection to meaningtool.
+            `ValueError`: if the `content_language` isn't valid.
+        """
+        self._validate_parameters(source, input, url_hint, content_language)
+
         url = u"%s/tags" % self._base_url
         data = {}
         headers = []
@@ -131,15 +212,60 @@ class Client(object):
         data["api_key"] = self.api_key
 
         if url_hint:
-            if not _re_url.match(url_hint):
-                raise ValueError(u"url_hint")
+            self._validate_url(url_hint)
             data["url_hint"] = url_hint.encode("utf8")
 
         if content_language:
             content_language = content_language[:2].lower()
-            if not len(content_language) == 2:
-                raise ValueError(u"content_language")
             headers.append(("Content-Language", content_language.encode("ascii")))
 
         # Even if POST, it's idempotent as GET.
         return self._parse_result(self._req("POST", url, data, headers))
+
+    def _validate_url(self, url):
+        """ Validates that the url has a url format.
+
+        :parameters:
+            url: str
+                the url to validate.
+
+        :exceptions:
+            `InvalidUrl`: if the url isn't valid.
+        """
+        if not _re_url.match(url):
+            raise InvalidUrl(url)
+
+    def _validate_parameters(self, source, input, url_hint, content_language, \
+                                        additionals=None):
+        """ Validates that the values used for the API are valid.
+        The valid values are the ones that are on the documentation.
+
+        :parameters:
+            source: str
+                indicates the type of the input
+            input: str
+                the data to categorize.
+            url_hint: str
+                the url from where the data was taken
+            content_language: str
+                the language of the input.
+
+        :exceptions:
+            `InvalidParameter`: if a parameter has an invalid value.
+            `InvalidUrl`: if the input (when the source is url) or the url_hint
+                aren't valid urls.
+        """
+        if not source in ["text", "url", "html"]:
+            raise InvalidParameter("The 'source' is invalid")
+        if source == "url":
+            self._validate_url(input)
+        if url_hint:
+            self._validate_url(url_hint)
+        if content_language and not len(content_language) == 2:
+            raise InvalidParameter("The 'content_language' should be 2 chars")
+        if additionals:
+            for value in additionals:
+                if value not in \
+                    ["top-terms", "classifiers", "classifiers-top-terms"]:
+                    raise InvalidParameter("The 'additionals' is invalid")
+                
