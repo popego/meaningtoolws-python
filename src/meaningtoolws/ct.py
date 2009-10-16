@@ -26,7 +26,7 @@ except ImportError:
 from scoring_exceptions import BaseMeaningtoolError, InvalidParameter, InvalidUrl
 
 
-MT_BASE_URL = u"http://ws.meaningtool.com/ct/rest/v0.1"
+MT_BASE_URL = u"http://ws.meaningtool.com/ct/restv0.1"
 
 _re_url = re.compile(ur"^https?://.+$")
 
