@@ -93,8 +93,8 @@ class Client(object):
         try:
             resp = urllib2.urlopen(req)
         except urllib2.HTTPError, e:
-            if e.code >= 500:
-                raise
+            if e.code != 500 and e.code != 409:
+                raise BaseMeaningtoolError("There was an error while getting the data.")
             resp = e
         s = resp.read()
         return s
@@ -117,7 +117,6 @@ class Client(object):
     def _parse_result_json(self, raw):
         if raw == 'bad api key':    ## XXX: Workaround. The Invalid API key error response doesn't return a valid json response.
             raw = '{"status": "error", "message": "Invalid API key", "data": {}, "errcode": "UserKeyInvalid"}'
-
         return self._parse_result_base(json.loads(raw, encoding="utf8"))
 
     # default request/parse methods

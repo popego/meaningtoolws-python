@@ -78,6 +78,9 @@ class CannotDetectLanguageScoringError(ScoringError):
     message = u"Cannot detect the language of the text"
 
 
+class InternalError(ScoringError):
+    message = u"There was an error while categorizing."
+
 class InvalidUser(ScoringError):
     """ Raised when there is an error with the user used in the client.
     """
@@ -96,5 +99,20 @@ class UserKeyInvalid(InvalidUser):
     public.
     """
     message = u"Invalid API or CT key"
+
+class UrlClientError(BaseMeaningtoolError):
+    """ Exception thrown when there was a 40X when getting the url data.
+    This is thrown only when trying to extract the data from the input
+    and the input is an url, and when fetched the url a 40X http error
+    is returned.
+    """
+    message = u"Can't fetch the url."
+
+class UrlDestinationServerError(BaseMeaningtoolError):
+    """ Exception raised when there is a 50X when getting the url.
+    This is similar to the UrlClientError, but in this case a 50X http error
+    is returned.
+    """
+    message = u"Destination Server error while accessing the url."
 
 
