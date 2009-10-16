@@ -26,7 +26,7 @@ except ImportError:
 from scoring_exceptions import BaseMeaningtoolError, InvalidParameter, InvalidUrl
 
 
-MT_BASE_URL = u"http://ws.meaningtool.com/rest/v0.1"
+MT_BASE_URL = u"http://ws.meaningtool.com/ct/rest/v0.1"
 
 _re_url = re.compile(ur"^https?://.+$")
 
@@ -61,6 +61,9 @@ class Client(object):
     """ Interface to use the Meaningtool API.
     """
 
+    # Has the posibles codes that the call to the api may return.
+    POSIBLE_HTTP_CODES = [400, 401, 403, 404, 409, 500]
+
     def __init__(self, api_key, ct_key, base_url=MT_BASE_URL):
         """ Creates the client:
 
@@ -86,14 +89,18 @@ class Client(object):
             req = urllib2.Request(url, urllib.urlencode(data))
         else:
             raise ValueError(u"HTTP Method '%s' not supported" % method)
+
         req.add_header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
         req.add_header("Accept-Charset", "UTF-8")
         for k,v in headers:
             req.add_header(k, v)
+
+
+            
         try:
             resp = urllib2.urlopen(req)
         except urllib2.HTTPError, e:
-            if e.code != 500 and e.code != 409:
+            if e.code not in self.POSIBLE_HTTP_CODES:
                 raise BaseMeaningtoolError("There was an error while getting the data.")
             resp = e
         s = resp.read()

@@ -81,24 +81,25 @@ class CannotDetectLanguageScoringError(ScoringError):
 class InternalError(ScoringError):
     message = u"There was an error while categorizing."
 
-class InvalidUser(ScoringError):
+class InvalidKey(ScoringError):
     """ Raised when there is an error with the user used in the client.
     """
     message = u"The user is invalid."
 
-class LimitsExceeded(InvalidUser):
+class LimitsExceeded(InvalidKey):
     message = u"API usage limits exceeded"
 
-class ContractNotActive(InvalidUser):
+class ContractNotActive(InvalidKey):
     message = u"Your API key isn't enabled yet"
 
-class UserKeyInvalid(InvalidUser):
-    """ Raised when the api or ct key are invalid.
-    Also raised when the category tree with that ct-key doesn't
-    belongs to the user with the specified API, and the category tree isn't 
-    public.
-    """
-    message = u"Invalid API or CT key"
+class CategoryTreeNotFound(InvalidKey):
+    message = u"No category tree found with the specified ct-key."
+
+class CategoryKeyInvalid(InvalidKey):
+    message = u"The category doesn't belongs to the user and it isn't public."
+
+class UserKeyInvalid(InvalidKey):
+    message = u"Invalid API key"
 
 class UrlClientError(BaseMeaningtoolError):
     """ Exception thrown when there was a 40X when getting the url data.
@@ -115,4 +116,7 @@ class UrlDestinationServerError(BaseMeaningtoolError):
     """
     message = u"Destination Server error while accessing the url."
 
-
+class UrlTimeoutError(BaseMeaningtoolError):
+    """ Exception raised when there was a timeout when getting the url.
+    """
+    message = u"Timeout while accessing the url."
