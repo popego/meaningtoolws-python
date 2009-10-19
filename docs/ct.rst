@@ -19,7 +19,7 @@ Client
         *Meaningtool API Key* identifying your *Meaningtool Account*
         associated with the requests made from this ``Client``.
 
-    .. attribute:: ct_key
+    .. attribute:: tree_key
 
          *Meaningtool Category Tree Key* identifying the *Meaningtool Category
          Tree* associated with the requests made from this ``Client``.
@@ -34,7 +34,7 @@ Client
                 Account* associated with the requests made from this
                 ``Client``.
 
-            ct_key
+            tree_key
                 *Meaningtool Category Tree Key* identifying the *Meaningtool
                 Category Tree* associated with the requests made from this
                 ``Client``.
@@ -138,8 +138,8 @@ Client
             A ``Result`` when the Meaningtool Result status is ``'ok'``.
 
 
-.. _Categorizing: http://meaningtool.com/docs/ws/rest/v0.1/index.html#categorizing
-.. _Tagging: http://meaningtool.com/docs/ws/rest/v0.1/index.html#tagging
+.. _Categorizing: http://meaningtool.com/docs/ws/0.1/index.html#categorizing
+.. _Tagging: http://meaningtool.com/docs/ws/0.1/index.html#tagging
 
 
 Results
@@ -162,7 +162,7 @@ Results
     .. attribute:: meaningtoolws.ct.Result.status_message
 
         Detailed and human-readable message (``unicode``) about what just happened (E.g,
-        ``'wrong ct_key'`` or ``'successfully categorized'``).
+        ``'wrong tree_key'`` or ``'successfully categorized'``).
 
     .. attribute:: meaningtoolws.ct.Result.data
 
@@ -174,5 +174,5 @@ Results
     :show-inheritance:
 
 
-.. _Meaningtool Result: http://meaningtool.com/docs/ws/rest/v0.1/index.html#meaningtool-results.
-.. _Errors Reference: http://meaningtool.com/docs/ws/rest/v0.1/index.html#errors-reference
+.. _Meaningtool Result: http://meaningtool.com/docs/ws/0.1/index.html#meaningtool-results.
+.. _Errors Reference: http://meaningtool.com/docs/ws/0.1/index.html#errors-reference

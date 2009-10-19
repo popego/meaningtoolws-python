@@ -26,7 +26,7 @@ except ImportError:
 from scoring_exceptions import BaseMeaningtoolError, InvalidParameter, InvalidUrl
 
 
-MT_BASE_URL = u"http://ws.meaningtool.com/ct/restv0.1"
+MT_BASE_URL = u"http://ws.meaningtool.com/0.1"
 
 _re_url = re.compile(ur"^https?://.+$")
 
@@ -64,23 +64,23 @@ class Client(object):
     # Has the posibles codes that the call to the api may return.
     POSIBLE_HTTP_CODES = [400, 401, 403, 404, 409, 500]
 
-    def __init__(self, api_key, ct_key, base_url=MT_BASE_URL):
+    def __init__(self, api_key, tree_key, base_url=MT_BASE_URL):
         """ Creates the client:
 
         :parameters:
             api_key: str
                 the api key of the user.
-            ct_key: str
+            tree_key: str
                 the tree key of the category tree to use.
             base_url: str
                 the url to use.
         """
         self.api_key = api_key
-        self.ct_key = ct_key
-        self._base_url = u"%s/%s" % (base_url, ct_key)
+        self.tree_key = tree_key
+        self._base_url = u"%s/%s" % (base_url, tree_key)
         
     def __repr__(self):
-        return u"<%s - ct_key: %s>" % (self.__class__.__name__, self.ct_key)
+        return u"<%s - tree_key: %s>" % (self.__class__.__name__, self.tree_key)
 
     def _req_base(self, method, url, data, headers):
         if method == "GET":

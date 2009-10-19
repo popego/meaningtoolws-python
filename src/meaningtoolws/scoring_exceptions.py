@@ -93,7 +93,7 @@ class ContractNotActive(InvalidKey):
     message = u"Your API key isn't enabled yet"
 
 class CategoryTreeNotFound(InvalidKey):
-    message = u"No category tree found with the specified ct-key."
+    message = u"No category tree found with the specified tree-key."
 
 class CategoryKeyInvalid(InvalidKey):
     message = u"The category doesn't belongs to the user and it isn't public."
